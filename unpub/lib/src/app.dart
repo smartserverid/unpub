@@ -11,8 +11,7 @@ import 'package:pub_semver/pub_semver.dart' as semver;
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
-import 'package:shelf_multipart/form_data.dart';
-import 'package:shelf_multipart/multipart.dart';
+import 'package:shelf_multipart/shelf_multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:unpub/src/meta_store.dart';
 import 'package:unpub/src/models.dart';
@@ -278,7 +277,7 @@ class App {
     try {
       var uploader = await _getUploaderEmail(req);
 
-      if (!req.isMultipartForm) {
+      if (req.formData() == null) {
         throw 'invalid request content-type';
       }
 
@@ -291,8 +290,9 @@ class App {
         Multipart? fileData;
         // Iterate over parts making up this request:
 
-        final parts = await req.multipartFormData.toList();
-        for (final part in parts) {
+        final multiparts = req.formData();
+        final parts = await multiparts!.formData;
+        await for (final part in parts) {
           if (part.name == 'file' || part.filename == 'package.tar.gz') {
             fileData = part.part;
             break;
