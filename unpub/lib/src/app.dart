@@ -318,7 +318,7 @@ class App {
           }
         }
       } catch (e) {
-        throw 'failed to read packages.tar.gz';
+        throw 'failed to read packages.tar.gz $e';
       }
 
       if (pubspecArchiveFile == null) {
